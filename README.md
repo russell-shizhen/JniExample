@@ -1,3 +1,3 @@
 # JniExample
 A hands on JNI example project to help JNI developer. 
-Blog: www.arophix.com
+* Blog: https://arophix.com/2017/12/17/andoid-jni-summary/
