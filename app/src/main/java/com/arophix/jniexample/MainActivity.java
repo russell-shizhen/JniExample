@@ -56,12 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     
-        String LibPath = getFilesDir().getAbsolutePath();
-//        boolean CopyRet = CopyFile(Environment.getExternalStorageDirectory().getPath() + "/native-lib.so", LibPath + "/native-lib.so");
-    
-        String path_to_data = Environment.getDataDirectory().getAbsolutePath();
         String path_sd_card = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String path_internal = Environment.getDownloadCacheDirectory().getAbsolutePath();
     
         FileOutputStream outputStream;
         FileInputStream inputStream;
@@ -86,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
         }
     
         // 2. This path works?
-//        System.load(filesDir + "/libnative-lib2.so");
+        System.load(filesDir + "/libnative-lib2.so");
         
-        System.load(path_sd_card + "/Download/libnative-lib.so");
+//        System.load(path_sd_card + "/Download/libnative-lib.so");
         
     
 //        try {
