@@ -20,8 +20,26 @@ static void downlaodImageNativeAsyncTask(JNIEnv *env,
 
 void* download_image_func(void *arg);
 
+
+std::string convertJStringToString(JNIEnv *env, jstring str) {
+    const jsize len = env->GetStringUTFLength(str);
+    const char *strChars = env->GetStringUTFChars(str, (jboolean *) 0);
+    std::string Result(strChars, len);
+    env->ReleaseStringUTFChars(str, strChars);
+    return Result;
+}
+
 JNIEXPORT jstring JNICALL
 Java_com_arophix_jniexample_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz){
+    
+    jstring arg3 = env->NewStringUTF("test_key");
+    const char *key_Name = env->GetStringUTFChars(arg3, 0);
+    
+    //TODO : for testing
+    jstring jstr = env->NewStringUTF("Ñandú");  //can pass param also
+    std::string result = convertJStringToString(env, jstr);
+    
+//    __android_log_write
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 };

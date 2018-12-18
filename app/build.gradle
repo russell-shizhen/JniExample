@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+project.ext {
+    mylibs = fileTree(dir: 'libs', include: ['*.jar'])
+}
+
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -15,12 +19,26 @@ android {
             }
         }
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs += ['/storage/emulated/0/Download/']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    if (project.hasProperty("doNotStrip")) {
+        packagingOptions {
+            doNotStrip '**/.*so'
+        }
+    }
+
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
@@ -29,10 +47,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+//    api fileTree(dir: 'libs', include: ['*.jar'])
+    api mylibs
 }
