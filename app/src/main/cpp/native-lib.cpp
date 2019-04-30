@@ -66,19 +66,24 @@ Java_com_arophix_jniexample_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz
         ALOGI("arrayLength: %c", ch);
     }
     
-    AAssetManager *assetMgr = AAssetManager_fromJava(env, assetManagerFromJava);
-    if(assetMgr != nullptr) {
-        AAssetDir* assetDir = AAssetManager_openDir(assetMgr, "");
+    AAssetManager *assetManager = AAssetManager_fromJava(env, assetManagerFromJava);
+    if(assetManager != nullptr) {
+        AAssetDir* assetDir = AAssetManager_openDir(assetManager, "");
         const char* filename = (const char*)NULL;
         while ((filename = AAssetDir_getNextFileName(assetDir)) != NULL) {
-            AAsset* asset = AAssetManager_open(assetMgr, filename, AASSET_MODE_STREAMING);
-            char buf[BUFSIZ];
-            int nb_read = 0;
-            FILE* out = fopen(filename, "w");
-            while ((nb_read = AAsset_read(asset, buf, BUFSIZ)) > 0)
-                fwrite(buf, nb_read, 1, out);
-            fclose(out);
-            AAsset_close(asset);
+            AAsset* asset = AAssetManager_open(assetManager, filename, AASSET_MODE_BUFFER);
+            if (asset != nullptr) {
+                ALOGI("Opened test file");
+                char buf[1024];
+                int nb_read = 0;
+                while ((nb_read = AAsset_read(asset, buf, 27)) > 0) {
+                    ALOGI("buf: %s", buf);
+                }
+    
+                AAsset_close(asset);
+            } else {
+                ALOGI("Failed to open test file");
+            }
         }
         AAssetDir_close(assetDir);
     }

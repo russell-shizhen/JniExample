@@ -1,1 +1,6 @@
-this is a test file.
+this is a test file line 1.
+this is a test file line 2.
+this is a test file line 3.
+this is a test file line 4.
+this is a test file line 5.
+this is a test file line 6.
