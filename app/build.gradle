@@ -4,6 +4,12 @@ project.ext {
     mylibs = fileTree(dir: 'libs', include: ['*.jar'])
 }
 
+def getFileSizeFromObb() {
+    // Method body here
+    File mainObb = new File("/Users/shizzhan/JniExample/app/CMakeLists.txt")
+    return mainObb.length()
+}
+
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -18,6 +24,9 @@ android {
                 cppFlags "-std=c++11 -frtti -fexceptions"
             }
         }
+
+        println "===++++ >>>>> size = " + getFileSizeFromObb()
+//        manifestPlaceholders = [main_obb_size: getFileSizeFromObb]
     }
 
     sourceSets {
@@ -56,4 +65,29 @@ dependencies {
 
 //    api fileTree(dir: 'libs', include: ['*.jar'])
     api mylibs
+}
+
+// Write apk to private archive
+def capitalizeFirstLetter(s) { s[0].toUpperCase() + s[1..-1] }
+def publish = project.tasks.create("copyApks")
+publish.description "Copies apks to custom directory"
+android.applicationVariants.all { variant ->
+
+    def customPath
+
+    variant.outputs.all {
+
+        customPath = "$projectDir"
+
+        println "===>>>>> size = " + getFileSizeFromObb()
+
+        def capitalizedVariantName = capitalizeFirstLetter(variant.name)
+        def task = project.tasks.create("copy${capitalizedVariantName}Apk", Copy)
+
+        task.from(outputFile)
+        task.into(customPath)
+
+        task.dependsOn variant.assemble
+        publish.dependsOn task
+    }
 }

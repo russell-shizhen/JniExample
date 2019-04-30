@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 
 import static android.Manifest.permission.READ_PHONE_STATE;
 
@@ -41,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
     
     // Used to load the 'native-lib' library on application startup. Note that the static initializer
     // will be firstly invoked before the class itself is loaded successfully.
-//    static {
-//        System.loadLibrary("native-lib");
-//    }
+    static {
+        System.loadLibrary("native-lib");
+    }
     
     
     FileDescriptor fileDescriptor;
@@ -56,33 +58,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     
-        String path_sd_card = Environment.getExternalStorageDirectory().getAbsolutePath();
-    
-        FileOutputStream outputStream;
-        FileInputStream inputStream;
-    
-        // 1. This path works.
-        //System.load("/data/data/com.arophix.jniexample/files/libnative-lib.so");
-        String filesDir = getFilesDir().getAbsolutePath();
+        // for `Activity`, `Service`. Otherwise simply get the context.
+//        Context context = this;
+//        String dbname = "dummy.db";
+//        String dbpath = context.getDatabasePath(dbname).getParent();
+//        Log.d("MY_TAG", dbpath);
         
-        try {
-            inputStream = new FileInputStream(new File(path_sd_card + "/Download/libnative-lib.so"));
-            outputStream = new FileOutputStream(new File(filesDir + "/libnative-lib2.so"));//openFileOutput("libnative-lib2.so", Context.MODE_PRIVATE);
-    
-            FileChannel inChannel = inputStream.getChannel();
-            FileChannel outChannel = outputStream.getChannel();
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-            inputStream.close();
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    
-        // 2. This path works?
-        System.load(filesDir + "/libnative-lib2.so");
-        
+//        String path_sd_card = Environment.getExternalStorageDirectory().getAbsolutePath();
+//
+//        FileOutputStream outputStream;
+//        FileInputStream inputStream;
+//
+//        // 1. This path works.
+//        //System.load("/data/data/com.arophix.jniexample/files/libnative-lib.so");
+//        String filesDir = getFilesDir().getAbsolutePath();
+//
+//        try {
+//            inputStream = new FileInputStream(new File(path_sd_card + "/Download/libnative-lib.so"));
+//            outputStream = new FileOutputStream(new File(filesDir + "/libnative-lib2.so"));//openFileOutput("libnative-lib2.so", Context.MODE_PRIVATE);
+//
+//            FileChannel inChannel = inputStream.getChannel();
+//            FileChannel outChannel = outputStream.getChannel();
+//            inChannel.transferTo(0, inChannel.size(), outChannel);
+//            inputStream.close();
+//            outputStream.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // 2. This path works?
+//        System.load(filesDir + "/libnative-lib2.so");
+//
 //        System.load(path_sd_card + "/Download/libnative-lib.so");
         
     
@@ -98,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
          * An example of a call to a native method returning a Java string.
          */
         TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+        tv.setText(stringFromJNI(this.getAssets()));
     
         AroMemory aroMemory = new AroMemory();
         AroStorage aroStorage = new AroStorage("SDCard", 1);
@@ -200,5 +208,5 @@ public class MainActivity extends AppCompatActivity {
      * which is packaged with this application.
      * This is an example of hard linked JNI functions, i.e. Java_package_name_ClassName(JNIEnv *, jobject thiz)
      */
-    public native String stringFromJNI();
+    public native String stringFromJNI(AssetManager assetManager);
 }

@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,23 +24,77 @@ static void downlaodImageNativeAsyncTask(JNIEnv *env,
 void* download_image_func(void *arg);
 
 
-std::string convertJStringToString(JNIEnv *env, jstring str) {
-    const jsize len = env->GetStringUTFLength(str);
-    const char *strChars = env->GetStringUTFChars(str, (jboolean *) 0);
-    std::string Result(strChars, len);
-    env->ReleaseStringUTFChars(str, strChars);
-    return Result;
-}
+//std::string convertJStringToString(JNIEnv *env, jstring str) {
+//    const jsize len = env->GetStringUTFLength(str);
+//    const char *strChars = env->GetStringUTFChars(str, (jboolean *) 0);
+//    std::string Result(strChars, len);
+//    env->ReleaseStringUTFChars(str, strChars);
+//    return Result;
+//}
 
 JNIEXPORT jstring JNICALL
-Java_com_arophix_jniexample_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz){
+Java_com_arophix_jniexample_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz, jobject assetManagerFromJava){
+    
+    
+    jstring stringValue = env->NewStringUTF("test");
+    
+    int foo1 [5] = { 16, 2, 77, 40, 12071 };
+    int *foo2 = (int*)malloc(5);
+    foo2[0] = 20;
+    foo2[1] = 8;
+    foo2[2] = 55;
+    foo2[3] = 6;
+    foo2[4] = 52;
+    
+    jclass stringClass = env->FindClass("java/lang/String");
+    jmethodID getBytesMId = env->GetMethodID(stringClass, "getBytes", "()[B");
+    
+    jbyteArray keyBytes = (jbyteArray)env->CallObjectMethod(stringValue, getBytesMId);
+    
+    // determine the needed length and allocate a buffer for it
+    jsize num_bytes = env->GetArrayLength(keyBytes);
+
+
+    // obtain the array elements
+    jbyte* elements = env->GetByteArrayElements(keyBytes, NULL);
+    if (!elements) {
+        // handle JNI error ...
+    }
+    
+    for(int i = 0; i < num_bytes; i++) {
+        char ch = elements[i];
+        ALOGI("arrayLength: %c", ch);
+    }
+    
+    AAssetManager *assetMgr = AAssetManager_fromJava(env, assetManagerFromJava);
+    if(assetMgr != nullptr) {
+        AAssetDir* assetDir = AAssetManager_openDir(assetMgr, "");
+        const char* filename = (const char*)NULL;
+        while ((filename = AAssetDir_getNextFileName(assetDir)) != NULL) {
+            AAsset* asset = AAssetManager_open(assetMgr, filename, AASSET_MODE_STREAMING);
+            char buf[BUFSIZ];
+            int nb_read = 0;
+            FILE* out = fopen(filename, "w");
+            while ((nb_read = AAsset_read(asset, buf, BUFSIZ)) > 0)
+                fwrite(buf, nb_read, 1, out);
+            fclose(out);
+            AAsset_close(asset);
+        }
+        AAssetDir_close(assetDir);
+    }
+    
+    
+
+    // Do not forget to release the element array provided by JNI:
+    env->ReleaseByteArrayElements(keyBytes, elements, JNI_ABORT);
     
     jstring arg3 = env->NewStringUTF("test_key");
+    
     const char *key_Name = env->GetStringUTFChars(arg3, 0);
     
-    //TODO : for testing
-    jstring jstr = env->NewStringUTF("Ñandú");  //can pass param also
-    std::string result = convertJStringToString(env, jstr);
+//    //TODO : for testing
+//    jstring jstr = env->NewStringUTF("Ñandú");  //can pass param also
+//    std::string result = convertJStringToString(env, jstr);
     
 //    __android_log_write
     std::string hello = "Hello from C++";
