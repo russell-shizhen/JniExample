@@ -42,6 +42,34 @@ android {
         }
     }
 
+    flavorDimensions "api"
+
+    productFlavors {
+
+        minApi16 {
+            dimension "api"
+            minSdkVersion 16
+            versionCode android.defaultConfig.versionCode
+            versionNameSuffix "-minApi16"
+
+//            ndk {
+//                abiFilters 'armeabi-v7a'
+//            }
+        }
+
+        minApi21 {
+            dimension "api"
+            minSdkVersion 21
+            versionCode android.defaultConfig.versionCode
+            versionNameSuffix "-minApi21"
+
+//            ndk {
+//                abiFilters 'arm64-v8a'
+//            }
+        }
+
+    }
+
     if (project.hasProperty("doNotStrip")) {
         packagingOptions {
             doNotStrip '**/.*so'
@@ -84,10 +112,29 @@ android.applicationVariants.all { variant ->
         def capitalizedVariantName = capitalizeFirstLetter(variant.name)
         def task = project.tasks.create("copy${capitalizedVariantName}Apk", Copy)
 
-        task.from(outputFile)
+        def outputDirPath = new File("${project.buildDir.absolutePath}/outputs/apk/${variant.flavorName}/${variant.buildType.name}")
+//        task.from(outputFile) // this will cause WARNING: API 'variantOutput.getPackageApplication()' is obsolete and has been replaced with 'variant.getPackageApplicationProvider()'.
+        task.from(outputDirPath)
         task.into(customPath)
 
-        task.dependsOn variant.assemble
+        task.dependsOn variant.assembleProvider
         publish.dependsOn task
+    }
+}
+
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+//        println "===>>>>> variant.packageApplicationProvider.get().outputDirectory = " + variant.outputs.get
+//        variant.packageApplicationProvider.get().outputDirectory = new File(
+//                project.rootDir.absolutePath + "/" + variant.buildType.name)
+
+//        def outputDirPath = new File("${project.buildDir.absolutePath}/outputs/apk/${variant.flavorName}/${variant.buildType.name}")
+//        variant.packageApplicationProvider.get().outputDirectory = outputDirPath
+
+        def outputDirPath2 = new File("${project.rootDir.absolutePath}/apks/${variant.flavorName}/${variant.buildType.name}")
+        variant.packageApplicationProvider.get().outputDirectory = outputDirPath2
+
+        def apkFileName = "${rootProject.name}_${android.defaultConfig.versionName}.apk"
+        output.outputFileName = apkFileName // directly assign the new name back to outputFileName
     }
 }

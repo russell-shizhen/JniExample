@@ -34,6 +34,9 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import static android.Manifest.permission.READ_PHONE_STATE;
 
@@ -101,6 +104,18 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (PackageManager.NameNotFoundException e) {
 //            e.printStackTrace();
 //        }
+//
+//        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz", Locale.US);
+//        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("MM d | E | hh:mm a", Locale.US);
+//        LocalDate date = LocalDate.parse("2019-12-25T17:00:00-05:00", inputFormatter);
+//        String formattedDate = outputFormatter.format(date);
+////        contentTextView.setText(formattedDate);
+        
+        int x = 12;
+        int y = 2;
+        int result1 = (int) (y/1001);
+        
+        int result = x/(y/1000);
         
         /*
          * An example of a call to a native method returning a Java string.
