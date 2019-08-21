@@ -87,6 +87,8 @@ dependencies {
 //    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -97,6 +99,7 @@ dependencies {
 
 // Write apk to private archive
 def capitalizeFirstLetter(s) { s[0].toUpperCase() + s[1..-1] }
+
 def publish = project.tasks.create("copyApks")
 publish.description "Copies apks to custom directory"
 android.applicationVariants.all { variant ->
@@ -137,4 +140,42 @@ android.applicationVariants.all { variant ->
         def apkFileName = "${rootProject.name}_${android.defaultConfig.versionName}.apk"
         output.outputFileName = apkFileName // directly assign the new name back to outputFileName
     }
+}
+
+
+project.afterEvaluate {
+    tasks.create("depsize") {
+        listConfigurationDependencies(configurations.default)
+    }
+
+    tasks.create("depsize-all-configurations") {
+        configurations.each {
+            if (it.isCanBeResolved()) {
+                listConfigurationDependencies(it)
+            }
+        }
+    }
+
+}
+
+def listConfigurationDependencies(Configuration configuration) {
+    def formatStr = "%,10.2f"
+
+    def size = configuration.collect { it.length() / (1024 * 1024) }.sum()
+
+    def out = new StringBuffer()
+    out << "\nConfiguration name: \"${configuration.name}\"\n"
+    if (size) {
+        out << 'Total dependencies size:'.padRight(65)
+        out << "${String.format(formatStr, size)} MB\n\n"
+
+        configuration.sort { -it.length() }
+                .each {
+            out << "${it.name}".padRight(65)
+            out << "${String.format(formatStr, (it.length() / 1024))} KB\n"
+        }
+    } else {
+        out << 'No dependencies found';
+    }
+    println(out)
 }
