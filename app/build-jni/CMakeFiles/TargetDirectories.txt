@@ -1,0 +1,3 @@
+/Users/shizzhan/JniExample/app/build-jni/CMakeFiles/rebuild_cache.dir
+/Users/shizzhan/JniExample/app/build-jni/CMakeFiles/edit_cache.dir
+/Users/shizzhan/JniExample/app/build-jni/CMakeFiles/native-lib.dir
