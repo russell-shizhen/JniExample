@@ -29,7 +29,6 @@ echo "[========HP Fortify report path: $FPR========]"
 function create_build_folder {
     rm -rf $BUILD_HOME
     mkdir $BUILD_HOME
-    cd $BUILD_HOME
 }
 
 # The standalone cmake build command can be found from below file. 
@@ -38,7 +37,9 @@ function create_build_folder {
 # `➜  JniExample git:(master) ✗ ./gradlew :app:externalNativeBuildRelease`
 function configure_cmake_files {
 
-    $ANDROID_CMAKE_HOME/cmake -H$BUILD_HOME \
+    cd $BUILD_HOME
+    
+    $ANDROID_CMAKE_HOME/cmake -H$BUILD_HOME/. \
         -DCMAKE_CXX_FLAGS=-std=c++11 -frtti -fexceptions \
         -DCMAKE_FIND_ROOT_PATH=$BUILD_HOME/.cxx/cmake/release/prefab/x86/prefab \
         -DCMAKE_BUILD_TYPE=Release \
