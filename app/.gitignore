@@ -1,2 +1,4 @@
 /build
 /build-jni
+/fortify_tools/build
+/hpfortify_build
