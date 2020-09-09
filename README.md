@@ -20,7 +20,7 @@ This directory is at the same level as `JniExample/app/CMakeLists.txt`
 
 ## Create `fortify_tools/fortify_cc`
 
-This is the **gcc** compiler wrapper which injects the sourceanalyzer command.
+This is the **gcc** compiler wrapper which injects the `sourceanalyzer` command.
 
 ```bash
 #!/bin/sh
@@ -34,7 +34,7 @@ $SOURCEANALYZER $MEMORY -b $PROJECTID gcc $@
 
 ## Create `fortify_tools/fortify_cxx`
 
-This is the **g++** compiler wrapper which injects the sourceanalyzer command.
+This is the **g++** compiler wrapper which injects the `sourceanalyzer` command.
 
 ```bash
 #!/bin/sh
@@ -95,7 +95,7 @@ Build command args:
 
 ```
 
-According to above to create the host specific CMake command for generating cmakefiles. E.g. for my case, it is as below:
+According to above to create the host specific **CMake** command for generating cmakefiles. E.g. for my case, it is as below:
 
 ```bash
 ➜  build-jni git:(master) ✗ /Users/myname/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake -H/Users/myname/JniExample/app \
@@ -140,17 +140,17 @@ cd JniExample/app/hpfortify_build
     set(CMAKE_CXX_COMPILER "/Users/myname/JniExample/app/fortify_tools/fortify_cxx"))
     ```
 
-4. Rebuild project
+## Rebuild project
 
-    ```bash
-    /Users/myname/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build .
-    ```
+```bash
+/Users/myname/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build .
+```
 
-5. Generate Fortify report
+## Generate Fortify report
 
-    ```bash
-    Applications/Fortify/Fortify_SCA_and_Apps_20.1.0/bin/sourceanalyzer -b JNI_EXAMPLE -scan -f JNI_EXAMPLE.fpr
-    ```
+```bash
+Applications/Fortify/Fortify_SCA_and_Apps_20.1.0/bin/sourceanalyzer -b JNI_EXAMPLE -scan -f JNI_EXAMPLE.fpr
+```
 
 ## Automation
 
